@@ -3,6 +3,7 @@ import sqeezz
 from unittest.mock import Mock
 import asyncio
 import datetime
+from typing import Dict, List, Any, Callable, Optional
 
 # ===== BASIC BUILDER CAPABILITIES =====
 
@@ -13,7 +14,7 @@ sqeezz.builder()\
     .lazy_add_ref('sys')\
     .lazy_add_ref('json')
 
-def basic_example():
+def basic_example() -> None:
     os_ref = sqeezz.using('os')
     sys_ref = sqeezz.using('sys')
     json_ref = sqeezz.using('json')
@@ -27,23 +28,23 @@ basic_example()
 print("\n=== 2. Builder with add_ref (function/class references) ===")
 
 # Custom functions and classes to add as references
-def custom_logger(message):
+def custom_logger(message: str) -> str:
     return f"[{datetime.datetime.now()}] {message}"
 
 class Calculator:
     @staticmethod
-    def add(a, b):
+    def add(a: int, b: int) -> int:
         return a + b
     
     @staticmethod
-    def multiply(a, b):
+    def multiply(a: int, b: int) -> int:
         return a * b
 
 class DatabaseConnection:
-    def __init__(self, host):
+    def __init__(self, host: str) -> None:
         self.host = host
     
-    def connect(self):
+    def connect(self) -> str:
         return f"Connected to {self.host}"
 
 # Add function and class references
@@ -52,7 +53,7 @@ sqeezz.builder()\
     .add_ref(Calculator)\
     .add_ref(DatabaseConnection)
 
-def function_class_example():
+def function_class_example() -> None:
     logger = sqeezz.using('custom_logger')
     calc = sqeezz.using('Calculator')
     db_class = sqeezz.using('DatabaseConnection')
@@ -85,7 +86,7 @@ sqeezz.builder()\
     .add_named_ref('config', {'debug': True, 'port': 5000})\
     .add_named_ref('logger_func', custom_logger)
 
-def named_ref_example():
+def named_ref_example() -> None:
     db = sqeezz.using('db')
     api = sqeezz.using('api')
     config = sqeezz.using('config')
@@ -125,7 +126,7 @@ sqeezz.builder('testing')\
     .add_named_ref('db_host', 'test-db')\
     .add_named_ref('debug', True)
 
-def environment_info():
+def environment_info() -> None:
     os_ref = sqeezz.using('os')
     sys_ref = sqeezz.using('sys')
     db_host = sqeezz.using('db_host')
@@ -137,9 +138,9 @@ def environment_info():
     print(f"Debug mode: {debug}")
 
 # Create grouped functions
-prod_info = sqeezz.group('production', environment_info)
-dev_info = sqeezz.group('development', environment_info)
-test_info = sqeezz.group('testing', environment_info)
+prod_info: Callable[[], None] = sqeezz.group('production', environment_info)
+dev_info: Callable[[], None] = sqeezz.group('development', environment_info)
+test_info: Callable[[], None] = sqeezz.group('testing', environment_info)
 
 print("Production environment:")
 prod_info()
@@ -163,7 +164,7 @@ sqeezz.builder('mobile_app')\
     .add_named_ref('host', 'localhost')\
     .add_named_ref('routes', ['/mobile/auth', '/mobile/data'])
 
-def server_config():
+def server_config() -> None:
     port = sqeezz.using('port')
     host = sqeezz.using('host')
     routes = sqeezz.using('routes')
@@ -171,7 +172,7 @@ def server_config():
     print(f"Server running on {host}:{port}")
     print(f"Available routes: {', '.join(routes)}")
 
-def route_handler(route_name):
+def route_handler(route_name: str) -> None:
     routes = sqeezz.using('routes')
     port = sqeezz.using('port')
     
@@ -180,11 +181,11 @@ def route_handler(route_name):
     else:
         print(f"Route {route_name} not found")
 
-web_server_config = sqeezz.group('web_app', server_config)
-mobile_server_config = sqeezz.group('mobile_app', server_config)
+web_server_config: Callable[[], None] = sqeezz.group('web_app', server_config)
+mobile_server_config: Callable[[], None] = sqeezz.group('mobile_app', server_config)
 
-web_route_handler = sqeezz.group('web_app', route_handler)
-mobile_route_handler = sqeezz.group('mobile_app', route_handler)
+web_route_handler: Callable[[str], None] = sqeezz.group('web_app', route_handler)
+mobile_route_handler: Callable[[str], None] = sqeezz.group('mobile_app', route_handler)
 
 print("Web app configuration:")
 web_server_config()
@@ -202,7 +203,7 @@ sqeezz.builder('async_env')\
     .add_named_ref('delay', 0.1)\
     .add_named_ref('message_prefix', '[ASYNC]')
 
-async def async_operation():
+async def async_operation() -> str:
     delay = sqeezz.using('delay')
     prefix = sqeezz.using('message_prefix')
     
@@ -211,7 +212,7 @@ async def async_operation():
     print(f"{prefix} Async operation completed!")
     return "async_result"
 
-async def async_data_processor(data):
+async def async_data_processor(data: List[str]) -> List[str]:
     prefix = sqeezz.using('message_prefix')
     delay = sqeezz.using('delay')
     
@@ -222,10 +223,10 @@ async def async_data_processor(data):
     return processed
 
 # Create grouped async functions
-grouped_async_op = sqeezz.group('async_env', async_operation)
-grouped_async_processor = sqeezz.group('async_env', async_data_processor)
+grouped_async_op: Callable[[], Any] = sqeezz.group('async_env', async_operation)
+grouped_async_processor: Callable[[List[str]], Any] = sqeezz.group('async_env', async_data_processor)
 
-async def run_async_examples():
+async def run_async_examples() -> None:
     print("Running async operations...")
     
     result1 = await grouped_async_op()
@@ -241,27 +242,27 @@ print("\n=== 7. Complex Dependency Chains ===")
 
 # Simulate a complex application with multiple dependencies
 class UserService:
-    def __init__(self, db, logger):
+    def __init__(self, db: Any, logger: Callable[[str], str]) -> None:
         self.db = db
         self.logger = logger
     
-    def get_user(self, user_id):
+    def get_user(self, user_id: int) -> Dict[str, Any]:
         self.logger(f"Fetching user {user_id}")
         return self.db.find_user(user_id)
 
 class EmailService:
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.smtp_host = config['smtp_host']
         self.port = config['port']
     
-    def send_email(self, to, subject):
+    def send_email(self, to: str, subject: str) -> str:
         return f"Email sent to {to} via {self.smtp_host}:{self.port}"
 
 # Mock dependencies
 mock_user_db = Mock()
 mock_user_db.find_user.return_value = {"id": 1, "name": "Alice", "email": "alice@example.com"}
 
-email_config = {
+email_config: Dict[str, Any] = {
     'smtp_host': 'smtp.example.com',
     'port': 587
 }
@@ -274,7 +275,7 @@ sqeezz.builder('app')\
     .add_ref(UserService)\
     .add_ref(EmailService)
 
-def user_workflow(user_id):
+def user_workflow(user_id: int) -> None:
     # Get dependencies
     user_service_class = sqeezz.using('UserService')
     email_service_class = sqeezz.using('EmailService')
@@ -293,7 +294,7 @@ def user_workflow(user_id):
     print(f"User: {user}")
     print(f"Email result: {email_result}")
 
-app_workflow = sqeezz.group('app', user_workflow)
+app_workflow: Callable[[int], None] = sqeezz.group('app', user_workflow)
 
 print("Complex dependency chain example:")
 app_workflow(123)
@@ -301,16 +302,16 @@ app_workflow(123)
 print("\n=== 8. Switching Between Groups Dynamically ===")
 
 # Demonstrate switching contexts
-def flexible_operation(operation_type):
+def flexible_operation(operation_type: str) -> None:
     config = sqeezz.using('debug')
     env_name = sqeezz.using('db_host')  # Using db_host as environment identifier
     
     print(f"Operation '{operation_type}' in environment: {env_name}, debug: {config}")
 
 # Use the same function with different groups
-prod_operation = sqeezz.group('production', flexible_operation)
-dev_operation = sqeezz.group('development', flexible_operation)
-test_operation = sqeezz.group('testing', flexible_operation)
+prod_operation: Callable[[str], None] = sqeezz.group('production', flexible_operation)
+dev_operation: Callable[[str], None] = sqeezz.group('development', flexible_operation)
+test_operation: Callable[[str], None] = sqeezz.group('testing', flexible_operation)
 
 print("Same function, different environments:")
 prod_operation("user_creation")
