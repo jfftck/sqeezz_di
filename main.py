@@ -1,6 +1,6 @@
 import sqeezz
 import asyncio
-from typing import Dict, List, Any, Callable
+from typing import List, Any, Callable
 from config import setup_builders
 
 # ===== SETUP BUILDERS =====
@@ -28,12 +28,12 @@ print("\n=== 2. Builder with add_ref (function/class references) ===")
 
 def function_class_example() -> None:
     logger = sqeezz.using('custom_logger')
-    calc = sqeezz.using('Calculator')
+    Calculator = sqeezz.using('Calculator')
     db_class = sqeezz.using('DatabaseConnection')
 
     print(logger("Application started"))
-    print(f"5 + 3 = {calc.add(5, 3)}")
-    print(f"4 * 7 = {calc.multiply(4, 7)}")
+    print(f"5 + 3 = {Calculator.add(5, 3)}")
+    print(f"4 * 7 = {Calculator.multiply(4, 7)}")
 
     # Create instance of class
     db = db_class("localhost:5432")
@@ -180,15 +180,15 @@ print("\n=== 7. Complex Dependency Chains ===")
 
 def user_workflow(user_id: int) -> None:
     # Get dependencies
-    User = sqeezz.using('UserService')
-    Email = sqeezz.using('EmailService')
+    UserService = sqeezz.using('UserService')
+    EmailService = sqeezz.using('EmailService')
     user_db = sqeezz.using('user_db')
     logger = sqeezz.using('app_logger')
     email_config = sqeezz.using('email_config')
 
     # Create service instances
-    user_service = User(user_db, logger)
-    email_service = Email(email_config)
+    user_service = UserService(user_db, logger)
+    email_service = EmailService(email_config)
 
     # Execute workflow
     user = user_service.get_user(user_id)
