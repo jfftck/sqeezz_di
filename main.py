@@ -230,6 +230,79 @@ prod_operation("user_creation")
 dev_operation("user_creation")
 test_operation("user_creation")
 
+print("\n=== 9. Class Example with Using initialization ===")
+
+
+class ServiceManager:
+    """Example class that uses Using for dependency access"""
+    
+    def __init__(self):
+        # Initialize Using objects for dependencies we'll need
+        self.logger_using = sqeezz.Using('app_logger')
+        self.config_using = sqeezz.Using('config')
+        self.db_using = sqeezz.Using('db')
+        self.user_service_using = sqeezz.Using('UserService')
+    
+    def get_logger(self):
+        """Get logger using Using.get"""
+        return self.logger_using.get
+    
+    def get_config_value(self, key: str):
+        """Get configuration value using Using.get"""
+        config = self.config_using.get
+        return config.get(key)
+    
+    def log_system_status(self):
+        """Log system status using dependencies through Using.get"""
+        logger = self.logger_using.get
+        config = self.config_using.get
+        
+        debug_mode = config.get('debug', False)
+        port = config.get('port', 'unknown')
+        
+        return logger(f"System status: debug={debug_mode}, port={port}")
+    
+    def create_user_service(self):
+        """Create user service instance using Using.get"""
+        UserService = self.user_service_using.get
+        db = self.db_using.get
+        logger = self.logger_using.get
+        
+        return UserService(db, logger)
+    
+    def perform_user_operation(self, user_id: int):
+        """Perform a complete user operation using multiple dependencies"""
+        logger = self.logger_using.get
+        logger(f"Starting user operation for user {user_id}")
+        
+        user_service = self.create_user_service()
+        user_data = user_service.get_user(user_id)
+        
+        logger("User operation completed successfully")
+        return user_data
+
+
+# Create grouped version of the service manager
+class_service_manager = sqeezz.group('app', ServiceManager)
+
+print("Creating ServiceManager instance:")
+service_manager = class_service_manager()
+
+print("\nTesting ServiceManager methods:")
+print("1. Log system status:")
+print(f"   {service_manager.log_system_status()}")
+
+print("\n2. Get config value:")
+print(f"   Debug mode: {service_manager.get_config_value('debug')}")
+
+print("\n3. Perform user operation:")
+user_result = service_manager.perform_user_operation(456)
+print(f"   User data: {user_result}")
+
+print("\n4. Direct logger access:")
+logger = service_manager.get_logger()
+print(f"   {logger('Direct logger call from ServiceManager')}")
+
 print("\n=== Summary ===")
 print("Demonstrated sqeezz capabilities:")
 print("✓ lazy_add_ref - Load modules dynamically")
@@ -240,3 +313,4 @@ print("✓ Group function wrapping")
 print("✓ Async function support")
 print("✓ Complex dependency injection")
 print("✓ Dynamic group switching")
+print("✓ Class with Using initialization and Using.get methods")
