@@ -31,14 +31,23 @@ class _Builder:
 
         return self
 
+class Using:
+    def __init__(self, name: str):
+        self._refs = _refs
+        self._name = name
+
+    @property
+    def get(self) -> Any:
+        return self._refs[_group_name][self._name]
+
 
 def builder(name: str = 'default') -> _Builder:
     return _Builder(name)
 
 
 def using(name: str) -> Any:
-    group_name = _group_name
-    return _refs[group_name][name]
+    _using = Using(name)
+    return _using.get
 
 
 def group(group_name: str, func: Callable[..., Any]) -> Callable[..., Any]:
