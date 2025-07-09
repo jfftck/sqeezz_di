@@ -303,6 +303,37 @@ print("\n4. Direct logger access:")
 logger = service_manager.get_logger()
 print(f"   {logger('Direct logger call from ServiceManager')}")
 
+print("\n=== 10. ServiceManager with Different Groups ===")
+
+# Create enterprise version of the service manager
+enterprise_service_manager = sqeezz.group('enterprise', ServiceManager)
+
+print("Creating Enterprise ServiceManager instance:")
+enterprise_manager = enterprise_service_manager()
+
+print("\nTesting Enterprise ServiceManager methods:")
+print("1. Log system status:")
+print(f"   {enterprise_manager.log_system_status()}")
+
+print("\n2. Get config values:")
+print(f"   Debug mode: {enterprise_manager.get_config_value('debug')}")
+print(f"   Port: {enterprise_manager.get_config_value('port')}")
+print(f"   Max connections: {enterprise_manager.get_config_value('max_connections')}")
+
+print("\n3. Perform user operation:")
+enterprise_user_result = enterprise_manager.perform_user_operation(789)
+print(f"   Enterprise user data: {enterprise_user_result}")
+
+print("\n4. Compare configurations:")
+print("App group config:")
+print(f"   Port: {service_manager.get_config_value('port')}")
+print(f"   Debug: {service_manager.get_config_value('debug')}")
+
+print("Enterprise group config:")
+print(f"   Port: {enterprise_manager.get_config_value('port')}")
+print(f"   Debug: {enterprise_manager.get_config_value('debug')}")
+print(f"   Max connections: {enterprise_manager.get_config_value('max_connections')}")
+
 print("\n=== Summary ===")
 print("Demonstrated sqeezz capabilities:")
 print("✓ lazy_add_ref - Load modules dynamically")
@@ -314,3 +345,4 @@ print("✓ Async function support")
 print("✓ Complex dependency injection")
 print("✓ Dynamic group switching")
 print("✓ Class with Using initialization and Using.get methods")
+print("✓ Classes working with multiple groups and different configurations")

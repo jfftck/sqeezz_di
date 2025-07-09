@@ -148,3 +148,14 @@ def setup_builders():
         .add_named_ref('db', mock_user_db)\
         .add_ref(UserService)\
         .add_ref(EmailService)
+        
+    # Add a second group for class example demonstration
+    sqeezz.builder('enterprise')\
+        .add_named_ref('user_db', mock_user_db)\
+        .add_named_ref('app_logger', custom_logger)\
+        .add_named_ref('logger_func', custom_logger)\
+        .add_named_ref('email_config', {'smtp_host': 'enterprise-smtp.example.com', 'port': 465})\
+        .add_named_ref('config', {'debug': False, 'port': 8080, 'max_connections': 1000})\
+        .add_named_ref('db', mock_user_db)\
+        .add_ref(UserService)\
+        .add_ref(EmailService)
