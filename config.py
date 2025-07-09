@@ -142,6 +142,7 @@ def setup_builders():
     sqeezz.builder('app')\
         .add_named_ref('user_db', mock_user_db)\
         .add_named_ref('app_logger', custom_logger)\
+        .add_named_ref('logger_func', custom_logger)\
         .add_named_ref('email_config', email_config)\
         .add_named_ref('config', {'debug': True, 'port': 5000})\
         .add_named_ref('db', mock_user_db)\

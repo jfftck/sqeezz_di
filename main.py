@@ -238,7 +238,7 @@ class ServiceManager:
     
     def __init__(self):
         # Initialize Using objects for dependencies we'll need
-        self.logger_using = sqeezz.Using('app_logger')
+        self.logger_using = sqeezz.Using('logger_func')
         self.config_using = sqeezz.Using('config')
         self.db_using = sqeezz.Using('db')
         self.user_service_using = sqeezz.Using('UserService')
