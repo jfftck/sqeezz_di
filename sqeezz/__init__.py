@@ -1,6 +1,6 @@
 from functools import wraps
 from importlib import import_module
-from inspect import iscoroutinefunction, signature
+from inspect import isclass, iscoroutinefunction, signature
 from typing import Any, Callable, Self
 
 _refs = {}
@@ -31,7 +31,9 @@ class _Builder:
 
         return self
 
+
 class Using:
+
     def __init__(self, name: str):
         self._refs = _refs
         self._name = name
