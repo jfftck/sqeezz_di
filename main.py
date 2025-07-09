@@ -282,57 +282,59 @@ class ServiceManager:
         return user_data
 
 
-# Create grouped version of the service manager
-class_service_manager = sqeezz.group('app', ServiceManager)
+# Create ServiceManager instance
+service_manager = ServiceManager()
 
-print("Creating ServiceManager instance:")
-service_manager = class_service_manager()
+# Create grouped versions of the methods
+app_log_system_status = sqeezz.group('app', service_manager.log_system_status)
+app_get_config_value = sqeezz.group('app', service_manager.get_config_value)
+app_perform_user_operation = sqeezz.group('app', service_manager.perform_user_operation)
+app_get_logger = sqeezz.group('app', service_manager.get_logger)
 
-print("\nTesting ServiceManager methods:")
+print("Testing ServiceManager methods with app group:")
 print("1. Log system status:")
-print(f"   {service_manager.log_system_status()}")
+print(f"   {app_log_system_status()}")
 
 print("\n2. Get config value:")
-print(f"   Debug mode: {service_manager.get_config_value('debug')}")
+print(f"   Debug mode: {app_get_config_value('debug')}")
 
 print("\n3. Perform user operation:")
-user_result = service_manager.perform_user_operation(456)
+user_result = app_perform_user_operation(456)
 print(f"   User data: {user_result}")
 
 print("\n4. Direct logger access:")
-logger = service_manager.get_logger()
+logger = app_get_logger()
 print(f"   {logger('Direct logger call from ServiceManager')}")
 
 print("\n=== 10. ServiceManager with Different Groups ===")
 
-# Create enterprise version of the service manager
-enterprise_service_manager = sqeezz.group('enterprise', ServiceManager)
+# Create enterprise versions of the methods
+enterprise_log_system_status = sqeezz.group('enterprise', service_manager.log_system_status)
+enterprise_get_config_value = sqeezz.group('enterprise', service_manager.get_config_value)
+enterprise_perform_user_operation = sqeezz.group('enterprise', service_manager.perform_user_operation)
 
-print("Creating Enterprise ServiceManager instance:")
-enterprise_manager = enterprise_service_manager()
-
-print("\nTesting Enterprise ServiceManager methods:")
+print("Testing ServiceManager methods with enterprise group:")
 print("1. Log system status:")
-print(f"   {enterprise_manager.log_system_status()}")
+print(f"   {enterprise_log_system_status()}")
 
 print("\n2. Get config values:")
-print(f"   Debug mode: {enterprise_manager.get_config_value('debug')}")
-print(f"   Port: {enterprise_manager.get_config_value('port')}")
-print(f"   Max connections: {enterprise_manager.get_config_value('max_connections')}")
+print(f"   Debug mode: {enterprise_get_config_value('debug')}")
+print(f"   Port: {enterprise_get_config_value('port')}")
+print(f"   Max connections: {enterprise_get_config_value('max_connections')}")
 
 print("\n3. Perform user operation:")
-enterprise_user_result = enterprise_manager.perform_user_operation(789)
+enterprise_user_result = enterprise_perform_user_operation(789)
 print(f"   Enterprise user data: {enterprise_user_result}")
 
 print("\n4. Compare configurations:")
 print("App group config:")
-print(f"   Port: {service_manager.get_config_value('port')}")
-print(f"   Debug: {service_manager.get_config_value('debug')}")
+print(f"   Port: {app_get_config_value('port')}")
+print(f"   Debug: {app_get_config_value('debug')}")
 
 print("Enterprise group config:")
-print(f"   Port: {enterprise_manager.get_config_value('port')}")
-print(f"   Debug: {enterprise_manager.get_config_value('debug')}")
-print(f"   Max connections: {enterprise_manager.get_config_value('max_connections')}")
+print(f"   Port: {enterprise_get_config_value('port')}")
+print(f"   Debug: {enterprise_get_config_value('debug')}")
+print(f"   Max connections: {enterprise_get_config_value('max_connections')}")
 
 print("\n=== Summary ===")
 print("Demonstrated sqeezz capabilities:")
