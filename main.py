@@ -340,10 +340,9 @@ print(f"   Port: {enterprise_get_config_value('port')}")
 print(f"   Debug: {enterprise_get_config_value('debug')}")
 print(f"   Max connections: {enterprise_get_config_value('max_connections')}")
 
-print("\n=== 11. Group Switcher Decorator - Function Example ===")
+print("\n=== 11. Group Switcher Context Manager - Function Example ===")
 
 
-@sqeezz.group_switcher
 def api_handler(endpoint: str) -> dict:
     """Function that handles API requests with different configurations"""
     api_version = sqeezz.using('api_version')
@@ -364,15 +363,23 @@ def api_handler(endpoint: str) -> dict:
     }
 
 
-# Use the switcher with different groups
+# Use the context manager with different groups
 print("API Handler with different configurations:")
-print("V1 API:", api_handler['api_v1']('/users'))
-print("V2 API:", api_handler['api_v2']('/users'))
-print("Beta API:", api_handler['api_beta']('/users'))
+
+with sqeezz.group_switcher('api_v1'):
+    v1_result = api_handler('/users')
+print("V1 API:", v1_result)
+
+with sqeezz.group_switcher('api_v2'):
+    v2_result = api_handler('/users')
+print("V2 API:", v2_result)
+
+with sqeezz.group_switcher('api_beta'):
+    beta_result = api_handler('/users')
+print("Beta API:", beta_result)
 
 
 # Another function example with database configurations
-@sqeezz.group_switcher
 def database_connector(table_name: str) -> dict:
     """Function that connects to different database types"""
     db_type = sqeezz.using('db_type')
@@ -397,11 +404,20 @@ def database_connector(table_name: str) -> dict:
 
 
 print("\nDatabase Connector with different configurations:")
-print("MySQL:", database_connector['mysql_db']('users'))
-print("PostgreSQL:", database_connector['postgres_db']('users'))
-print("SQLite:", database_connector['sqlite_db']('users'))
 
-print("\n=== 12. Group Switcher Decorator - Class Method Example ===")
+with sqeezz.group_switcher('mysql_db'):
+    mysql_result = database_connector('users')
+print("MySQL:", mysql_result)
+
+with sqeezz.group_switcher('postgres_db'):
+    postgres_result = database_connector('users')
+print("PostgreSQL:", postgres_result)
+
+with sqeezz.group_switcher('sqlite_db'):
+    sqlite_result = database_connector('users')
+print("SQLite:", sqlite_result)
+
+print("\n=== 12. Group Switcher Context Manager - Class Method Example ===")
 
 
 class DatabaseManager:
@@ -410,7 +426,6 @@ class DatabaseManager:
     def __init__(self):
         self.connection_count = 0
 
-    @sqeezz.group_switcher
     def execute_query(self, query: str) -> dict:
         """Execute a query with different database configurations"""
         db_type = sqeezz.using('db_type')
@@ -430,7 +445,6 @@ class DatabaseManager:
             'result': f"Query '{query}' executed on {db_type} at {host}"
         }
 
-    @sqeezz.group_switcher
     def get_connection_info(self) -> dict:
         """Get connection information for different database types"""
         db_type = sqeezz.using('db_type')
@@ -453,24 +467,31 @@ db_manager = DatabaseManager()
 
 print("DatabaseManager with different database configurations:")
 print("\n1. Execute queries with different databases:")
-mysql_result = db_manager.execute_query['mysql_db']('SELECT * FROM users')
+
+with sqeezz.group_switcher('mysql_db'):
+    mysql_result = db_manager.execute_query('SELECT * FROM users')
 print(f"MySQL result: {mysql_result['result']}")
 
-postgres_result = db_manager.execute_query['postgres_db'](
-    'SELECT * FROM orders')
+with sqeezz.group_switcher('postgres_db'):
+    postgres_result = db_manager.execute_query('SELECT * FROM orders')
 print(f"PostgreSQL result: {postgres_result['result']}")
 
-sqlite_result = db_manager.execute_query['sqlite_db']('SELECT * FROM products')
+with sqeezz.group_switcher('sqlite_db'):
+    sqlite_result = db_manager.execute_query('SELECT * FROM products')
 print(f"SQLite result: {sqlite_result['result']}")
 
 print("\n2. Get connection info for different databases:")
-mysql_info = db_manager.get_connection_info['mysql_db']()
+
+with sqeezz.group_switcher('mysql_db'):
+    mysql_info = db_manager.get_connection_info()
 print(f"MySQL info: {mysql_info['status']}")
 
-postgres_info = db_manager.get_connection_info['postgres_db']()
+with sqeezz.group_switcher('postgres_db'):
+    postgres_info = db_manager.get_connection_info()
 print(f"PostgreSQL info: {postgres_info['status']}")
 
-sqlite_info = db_manager.get_connection_info['sqlite_db']()
+with sqeezz.group_switcher('sqlite_db'):
+    sqlite_info = db_manager.get_connection_info()
 print(f"SQLite info: {sqlite_info['status']}")
 
 print("\n3. Detailed configuration comparison:")
@@ -510,3 +531,4 @@ print("✓ Complex dependency injection")
 print("✓ Dynamic group switching")
 print("✓ Class with Using initialization and Using.get methods")
 print("✓ Classes working with multiple groups and different configurations")
+print("✓ Group switcher context manager for dynamic group switching")
