@@ -6,6 +6,7 @@ import datetime
 
 # ===== SQEEZZ BUILDER CONFIGURATIONS =====
 
+
 def custom_logger(message: str) -> str:
     return f"[{datetime.datetime.now()}] {message}"
 
@@ -195,4 +196,3 @@ def setup_builders():
         .add_named_ref('connection_pool', 5)\
         .add_named_ref('query_timeout', 10)\
         .add_named_ref('host', 'local.db')
-`
