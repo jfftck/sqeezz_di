@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from functools import wraps
 from importlib import import_module
 from inspect import iscoroutinefunction, signature
-from typing import Any, Callable, Self
+from typing import Any, Callable, Generator, Self
 
 _refs = {}
 _group_name = 'default'
@@ -84,7 +84,7 @@ def group(group_name: str, func: Callable[..., Any]) -> Callable[..., Any]:
 
 
 @contextmanager
-def group_switcher(group_name: str):
+def group_switcher(group_name: str) -> Generator[Any, Any, Any]:
     global _group_name
     original_group_name = _group_name
     _group_name = group_name
