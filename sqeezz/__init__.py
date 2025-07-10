@@ -1,6 +1,7 @@
+from contextlib import contextmanager
 from functools import wraps
 from importlib import import_module
-from inspect import isclass, iscoroutinefunction, signature
+from inspect import iscoroutinefunction, signature
 from typing import Any, Callable, Self
 
 _refs = {}
@@ -82,17 +83,10 @@ def group(group_name: str, func: Callable[..., Any]) -> Callable[..., Any]:
     return inner
 
 
-def group_switcher(func: Callable[..., Any]) -> Callable[..., Any]:
-
-    class _Switcher:
-
-        @wraps(func)
-        def __call__(self, *args: list[Any], **kwargs: dict[str, Any]):
-            return func(*args, **kwargs)
-
-        def __index__(self, group_name: str) -> Callable[..., Any]:
-            return group(group_name, func)
-
-        __call__.__signature__ = signature(func)
-
-    return _Switcher()
+@contextmanager
+def group_switcher(group_name: str):
+    global _group_name
+    original_group_name = _group_name
+    _group_name = group_name
+    yield
+    _group_name = original_group_name

@@ -288,7 +288,8 @@ service_manager = ServiceManager()
 # Create grouped versions of the methods
 app_log_system_status = sqeezz.group('app', service_manager.log_system_status)
 app_get_config_value = sqeezz.group('app', service_manager.get_config_value)
-app_perform_user_operation = sqeezz.group('app', service_manager.perform_user_operation)
+app_perform_user_operation = sqeezz.group(
+    'app', service_manager.perform_user_operation)
 app_get_logger = sqeezz.group('app', service_manager.get_logger)
 
 print("Testing ServiceManager methods with app group:")
@@ -309,9 +310,12 @@ print(f"   {logger('Direct logger call from ServiceManager')}")
 print("\n=== 10. ServiceManager with Different Groups ===")
 
 # Create enterprise versions of the methods
-enterprise_log_system_status = sqeezz.group('enterprise', service_manager.log_system_status)
-enterprise_get_config_value = sqeezz.group('enterprise', service_manager.get_config_value)
-enterprise_perform_user_operation = sqeezz.group('enterprise', service_manager.perform_user_operation)
+enterprise_log_system_status = sqeezz.group('enterprise',
+                                            service_manager.log_system_status)
+enterprise_get_config_value = sqeezz.group('enterprise',
+                                           service_manager.get_config_value)
+enterprise_perform_user_operation = sqeezz.group(
+    'enterprise', service_manager.perform_user_operation)
 
 print("Testing ServiceManager methods with enterprise group:")
 print("1. Log system status:")
@@ -338,26 +342,34 @@ print(f"   Max connections: {enterprise_get_config_value('max_connections')}")
 
 print("\n=== 11. Group Switcher Decorator - Function Example ===")
 
+
 @sqeezz.group_switcher
 def api_handler(endpoint: str) -> dict:
     """Function that handles API requests with different configurations"""
     api_version = sqeezz.using('api_version')
     rate_limit = sqeezz.using('rate_limit')
     timeout = sqeezz.using('timeout')
-    
+
     return {
-        'endpoint': endpoint,
-        'version': api_version,
-        'rate_limit': rate_limit,
-        'timeout': timeout,
-        'response': f"Handled {endpoint} with {api_version} (limit: {rate_limit}, timeout: {timeout}s)"
+        'endpoint':
+        endpoint,
+        'version':
+        api_version,
+        'rate_limit':
+        rate_limit,
+        'timeout':
+        timeout,
+        'response':
+        f"Handled {endpoint} with {api_version} (limit: {rate_limit}, timeout: {timeout}s)"
     }
+
 
 # Use the switcher with different groups
 print("API Handler with different configurations:")
 print("V1 API:", api_handler['api_v1']('/users'))
 print("V2 API:", api_handler['api_v2']('/users'))
 print("Beta API:", api_handler['api_beta']('/users'))
+
 
 # Another function example with database configurations
 @sqeezz.group_switcher
@@ -367,15 +379,22 @@ def database_connector(table_name: str) -> dict:
     connection_pool = sqeezz.using('connection_pool')
     query_timeout = sqeezz.using('query_timeout')
     host = sqeezz.using('host')
-    
+
     return {
-        'table': table_name,
-        'database': db_type,
-        'pool_size': connection_pool,
-        'timeout': query_timeout,
-        'host': host,
-        'connection_string': f"Connected to {db_type} at {host} (pool: {connection_pool}, timeout: {query_timeout}s)"
+        'table':
+        table_name,
+        'database':
+        db_type,
+        'pool_size':
+        connection_pool,
+        'timeout':
+        query_timeout,
+        'host':
+        host,
+        'connection_string':
+        f"Connected to {db_type} at {host} (pool: {connection_pool}, timeout: {query_timeout}s)"
     }
+
 
 print("\nDatabase Connector with different configurations:")
 print("MySQL:", database_connector['mysql_db']('users'))
@@ -384,12 +403,13 @@ print("SQLite:", database_connector['sqlite_db']('users'))
 
 print("\n=== 12. Group Switcher Decorator - Class Method Example ===")
 
+
 class DatabaseManager:
     """Class that manages database operations with different configurations"""
-    
+
     def __init__(self):
         self.connection_count = 0
-    
+
     @sqeezz.group_switcher
     def execute_query(self, query: str) -> dict:
         """Execute a query with different database configurations"""
@@ -397,9 +417,9 @@ class DatabaseManager:
         connection_pool = sqeezz.using('connection_pool')
         query_timeout = sqeezz.using('query_timeout')
         host = sqeezz.using('host')
-        
+
         self.connection_count += 1
-        
+
         return {
             'query': query,
             'database_type': db_type,
@@ -409,7 +429,7 @@ class DatabaseManager:
             'connection_id': self.connection_count,
             'result': f"Query '{query}' executed on {db_type} at {host}"
         }
-    
+
     @sqeezz.group_switcher
     def get_connection_info(self) -> dict:
         """Get connection information for different database types"""
@@ -417,7 +437,7 @@ class DatabaseManager:
         connection_pool = sqeezz.using('connection_pool')
         query_timeout = sqeezz.using('query_timeout')
         host = sqeezz.using('host')
-        
+
         return {
             'database_type': db_type,
             'host': host,
@@ -427,6 +447,7 @@ class DatabaseManager:
             'status': f"{db_type} database at {host} is ready"
         }
 
+
 # Create an instance of DatabaseManager
 db_manager = DatabaseManager()
 
@@ -435,7 +456,8 @@ print("\n1. Execute queries with different databases:")
 mysql_result = db_manager.execute_query['mysql_db']('SELECT * FROM users')
 print(f"MySQL result: {mysql_result['result']}")
 
-postgres_result = db_manager.execute_query['postgres_db']('SELECT * FROM orders')
+postgres_result = db_manager.execute_query['postgres_db'](
+    'SELECT * FROM orders')
 print(f"PostgreSQL result: {postgres_result['result']}")
 
 sqlite_result = db_manager.execute_query['sqlite_db']('SELECT * FROM products')
@@ -452,26 +474,29 @@ sqlite_info = db_manager.get_connection_info['sqlite_db']()
 print(f"SQLite info: {sqlite_info['status']}")
 
 print("\n3. Detailed configuration comparison:")
-print("MySQL config:", {
-    'type': mysql_info['database_type'],
-    'host': mysql_info['host'],
-    'pool': mysql_info['max_connections'],
-    'timeout': mysql_info['query_timeout']
-})
+print(
+    "MySQL config:", {
+        'type': mysql_info['database_type'],
+        'host': mysql_info['host'],
+        'pool': mysql_info['max_connections'],
+        'timeout': mysql_info['query_timeout']
+    })
 
-print("PostgreSQL config:", {
-    'type': postgres_info['database_type'],
-    'host': postgres_info['host'],
-    'pool': postgres_info['max_connections'],
-    'timeout': postgres_info['query_timeout']
-})
+print(
+    "PostgreSQL config:", {
+        'type': postgres_info['database_type'],
+        'host': postgres_info['host'],
+        'pool': postgres_info['max_connections'],
+        'timeout': postgres_info['query_timeout']
+    })
 
-print("SQLite config:", {
-    'type': sqlite_info['database_type'],
-    'host': sqlite_info['host'],
-    'pool': sqlite_info['max_connections'],
-    'timeout': sqlite_info['query_timeout']
-})</old_str>
+print(
+    "SQLite config:", {
+        'type': sqlite_info['database_type'],
+        'host': sqlite_info['host'],
+        'pool': sqlite_info['max_connections'],
+        'timeout': sqlite_info['query_timeout']
+    })
 
 print("\n=== Summary ===")
 print("Demonstrated sqeezz capabilities:")
