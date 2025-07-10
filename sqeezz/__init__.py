@@ -80,3 +80,19 @@ def group(group_name: str, func: Callable[..., Any]) -> Callable[..., Any]:
 
     inner.__signature__ = signature(func)
     return inner
+
+
+def group_switcher(func: Callable[..., Any]) -> Callable[..., Any]:
+
+    class _Switcher:
+
+        @wraps(func)
+        def __call__(self, *args: list[Any], **kwargs: dict[str, Any]):
+            return func(*args, **kwargs)
+
+        def __index__(self, group_name: str) -> Callable[..., Any]:
+            return group(group_name, func)
+
+        __call__.__signature__ = signature(func)
+
+    return _Switcher()
