@@ -235,49 +235,49 @@ print("\n=== 9. Class Example with Using initialization ===")
 
 class ServiceManager:
     """Example class that uses Using for dependency access"""
-    
+
     def __init__(self):
         # Initialize Using objects for dependencies we'll need
         self.logger_using = sqeezz.Using('logger_func')
         self.config_using = sqeezz.Using('config')
         self.db_using = sqeezz.Using('db')
         self.user_service_using = sqeezz.Using('UserService')
-    
+
     def get_logger(self):
         """Get logger using Using.get"""
         return self.logger_using.get
-    
+
     def get_config_value(self, key: str):
         """Get configuration value using Using.get"""
         config = self.config_using.get
         return config.get(key)
-    
+
     def log_system_status(self):
         """Log system status using dependencies through Using.get"""
         logger = self.logger_using.get
         config = self.config_using.get
-        
+
         debug_mode = config.get('debug', False)
         port = config.get('port', 'unknown')
-        
+
         return logger(f"System status: debug={debug_mode}, port={port}")
-    
+
     def create_user_service(self):
         """Create user service instance using Using.get"""
         UserService = self.user_service_using.get
         db = self.db_using.get
         logger = self.logger_using.get
-        
+
         return UserService(db, logger)
-    
+
     def perform_user_operation(self, user_id: int):
         """Perform a complete user operation using multiple dependencies"""
         logger = self.logger_using.get
         logger(f"Starting user operation for user {user_id}")
-        
+
         user_service = self.create_user_service()
         user_data = user_service.get_user(user_id)
-        
+
         logger("User operation completed successfully")
         return user_data
 
@@ -335,6 +335,10 @@ print("Enterprise group config:")
 print(f"   Port: {enterprise_get_config_value('port')}")
 print(f"   Debug: {enterprise_get_config_value('debug')}")
 print(f"   Max connections: {enterprise_get_config_value('max_connections')}")
+
+print("\n=== 11. Group Switcher Decorator - Function Example ===")
+
+print("\n=== 12. Group Switcher Decorator - Class Method Example ===")
 
 print("\n=== Summary ===")
 print("Demonstrated sqeezz capabilities:")

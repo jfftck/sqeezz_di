@@ -1,3 +1,4 @@
+# Added builder configurations for group_switcher examples
 
 import sqeezz
 from unittest.mock import Mock
@@ -52,7 +53,7 @@ class EmailService:
 
 def setup_builders():
     """Set up all sqeezz builder configurations"""
-    
+
     # Basic builder with lazy_add_ref
     sqeezz.builder()\
         .lazy_add_ref('os')\
@@ -148,7 +149,7 @@ def setup_builders():
         .add_named_ref('db', mock_user_db)\
         .add_ref(UserService)\
         .add_ref(EmailService)
-        
+
     # Add a second group for class example demonstration
     sqeezz.builder('enterprise')\
         .add_named_ref('user_db', mock_user_db)\
@@ -159,3 +160,39 @@ def setup_builders():
         .add_named_ref('db', mock_user_db)\
         .add_ref(UserService)\
         .add_ref(EmailService)
+
+    # Setup groups for the switcher example
+    sqeezz.builder('api_v1')\
+        .add_named_ref('api_version', 'v1')\
+        .add_named_ref('rate_limit', 100)\
+        .add_named_ref('timeout', 30)
+
+    sqeezz.builder('api_v2')\
+        .add_named_ref('api_version', 'v2')\
+        .add_named_ref('rate_limit', 1000)\
+        .add_named_ref('timeout', 60)
+
+    sqeezz.builder('api_beta')\
+        .add_named_ref('api_version', 'beta')\
+        .add_named_ref('rate_limit', 50)\
+        .add_named_ref('timeout', 15)
+
+    # Setup groups for database configurations
+    sqeezz.builder('mysql_db')\
+        .add_named_ref('db_type', 'MySQL')\
+        .add_named_ref('connection_pool', 20)\
+        .add_named_ref('query_timeout', 30)\
+        .add_named_ref('host', 'mysql.example.com')
+
+    sqeezz.builder('postgres_db')\
+        .add_named_ref('db_type', 'PostgreSQL')\
+        .add_named_ref('connection_pool', 50)\
+        .add_named_ref('query_timeout', 45)\
+        .add_named_ref('host', 'postgres.example.com')
+
+    sqeezz.builder('sqlite_db')\
+        .add_named_ref('db_type', 'SQLite')\
+        .add_named_ref('connection_pool', 5)\
+        .add_named_ref('query_timeout', 10)\
+        .add_named_ref('host', 'local.db')
+`
