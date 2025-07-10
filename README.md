@@ -8,9 +8,11 @@ A lightweight dependency injection and service configuration library for Python 
 - 🚀 **Simple API** - Easy to use builder pattern for configuring dependencies
 - 🔧 **Flexible Configuration** - Support for functions, classes, modules, and custom objects
 - 🏷️ **Named Groups** - Organize dependencies into logical groups and switch between them
+- 🔄 **Context Switching** - Dynamic group switching with context managers
 - ⚡ **Async Support** - Full support for async functions and coroutines
 - 🧪 **Testing Friendly** - Perfect for mocking dependencies in tests
 - 🌍 **Environment Management** - Easy switching between development, testing, and production configurations
+- 📦 **Using Class** - Advanced dependency access with the Using class
 
 ## Installation
 
@@ -138,6 +140,77 @@ print(prod_db_info())  # "Connecting to prod-db.example.com (debug: False)"
 print(dev_db_info())   # "Connecting to localhost (debug: True)"
 ```
 
+### Group Switcher Context Manager
+
+Use the `group_switcher` context manager for dynamic group switching within your code:
+
+```python
+# Configure different API environments
+sqeezz.builder('api_v1')\
+    .add_named_ref('api_version', 'v1')\
+    .add_named_ref('rate_limit', 100)\
+    .add_named_ref('timeout', 30)
+
+sqeezz.builder('api_v2')\
+    .add_named_ref('api_version', 'v2')\
+    .add_named_ref('rate_limit', 1000)\
+    .add_named_ref('timeout', 60)
+
+def api_handler(endpoint):
+    api_version = sqeezz.using('api_version')
+    rate_limit = sqeezz.using('rate_limit')
+    timeout = sqeezz.using('timeout')
+    
+    return f"Handled {endpoint} with {api_version} (limit: {rate_limit}, timeout: {timeout}s)"
+
+# Switch contexts dynamically
+with sqeezz.group_switcher('api_v1'):
+    v1_result = api_handler('/users')
+    
+with sqeezz.group_switcher('api_v2'):
+    v2_result = api_handler('/users')
+
+print(v1_result)  # "Handled /users with v1 (limit: 100, timeout: 30s)"
+print(v2_result)  # "Handled /users with v2 (limit: 1000, timeout: 60s)"
+```
+
+### Using Class for Advanced Dependency Management
+
+The `Using` class provides advanced dependency access with lazy evaluation:
+
+```python
+class ServiceManager:
+    def __init__(self):
+        # Initialize Using objects for dependencies
+        self.logger_using = sqeezz.Using('logger_func')
+        self.config_using = sqeezz.Using('config')
+        self.db_using = sqeezz.Using('db')
+    
+    def get_logger(self):
+        """Get logger using Using.get"""
+        return self.logger_using.get
+    
+    def get_config_value(self, key):
+        """Get configuration value using Using.get"""
+        config = self.config_using.get
+        return config.get(key)
+    
+    def log_system_status(self):
+        """Log system status using dependencies through Using.get"""
+        logger = self.logger_using.get
+        config = self.config_using.get
+        
+        debug_mode = config.get('debug', False)
+        port = config.get('port', 'unknown')
+        
+        return logger(f"System status: debug={debug_mode}, port={port}")
+
+# Use with different groups
+service_manager = ServiceManager()
+app_logger = sqeezz.group('app', service_manager.get_logger)
+enterprise_logger = sqeezz.group('enterprise', service_manager.get_logger)
+```
+
 ### Async Support
 
 Sqeezz fully supports async functions:
@@ -167,6 +240,49 @@ result = asyncio.run(async_fetch())
 ```
 
 ## Advanced Examples
+
+### Dynamic Database Configuration Switching
+
+```python
+class DatabaseManager:
+    def __init__(self):
+        self.connection_count = 0
+    
+    def execute_query(self, query):
+        db_type = sqeezz.using('db_type')
+        host = sqeezz.using('host')
+        connection_pool = sqeezz.using('connection_pool')
+        
+        self.connection_count += 1
+        return {
+            'query': query,
+            'database_type': db_type,
+            'executed_on': host,
+            'pool_size': connection_pool,
+            'connection_id': self.connection_count,
+            'result': f"Query '{query}' executed on {db_type} at {host}"
+        }
+
+# Configure different databases
+sqeezz.builder('mysql_db')\
+    .add_named_ref('db_type', 'MySQL')\
+    .add_named_ref('connection_pool', 20)\
+    .add_named_ref('host', 'mysql.example.com')
+
+sqeezz.builder('postgres_db')\
+    .add_named_ref('db_type', 'PostgreSQL')\
+    .add_named_ref('connection_pool', 50)\
+    .add_named_ref('host', 'postgres.example.com')
+
+# Use with context manager
+db_manager = DatabaseManager()
+
+with sqeezz.group_switcher('mysql_db'):
+    mysql_result = db_manager.execute_query('SELECT * FROM users')
+
+with sqeezz.group_switcher('postgres_db'):
+    postgres_result = db_manager.execute_query('SELECT * FROM orders')
+```
 
 ### Complex Dependency Chains
 
@@ -286,6 +402,28 @@ Retrieves a dependency from the current group.
 
 Wraps a function to use dependencies from a specific group.
 
+### `sqeezz.group_switcher(group_name: str)`
+
+Context manager for temporarily switching to a different group.
+
+```python
+with sqeezz.group_switcher('production'):
+    # Code here uses 'production' group dependencies
+    result = some_function()
+```
+
+### `sqeezz.Using(name: str)`
+
+Class for advanced dependency management with lazy evaluation.
+
+```python
+# Create Using instance
+config_using = sqeezz.Using('config')
+
+# Get dependency value
+config = config_using.get
+```
+
 ## Requirements
 
 - Python 3.8+
@@ -306,4 +444,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Basic dependency injection functionality
 - Named groups support
 - Async function support
+- Group switcher context manager
+- Using class for advanced dependency management
 - Comprehensive test suite
