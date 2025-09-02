@@ -1,7 +1,15 @@
 
 include README.md
 include LICENSE
-include pyproject.toml
 recursive-include sqeezz *.py
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+exclude main.py
+exclude config.py
+exclude test_*.py
+exclude setup.py
+exclude .replit
+exclude uv.lock
+exclude .gitignore
+prune .github
+prune sqeezz.egg-info
