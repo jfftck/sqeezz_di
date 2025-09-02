@@ -4,6 +4,8 @@ from importlib import import_module
 from inspect import iscoroutinefunction, signature
 from typing import Any, Callable, Generator
 
+__version__ = "0.1.0"
+
 _refs = {}
 _group_name = 'default'
 
