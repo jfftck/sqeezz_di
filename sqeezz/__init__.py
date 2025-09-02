@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from functools import wraps
 from importlib import import_module
 from inspect import iscoroutinefunction, signature
-from typing import Any, Callable, Generator, Self
+from typing import Any, Callable, Generator
 
 _refs = {}
 _group_name = 'default'
@@ -14,12 +14,12 @@ class _Builder:
         self.name = name
         self._refs = _refs
 
-    def add_ref(self, ref: Callable[..., Any] | type) -> Self:
+    def add_ref(self, ref: Callable[..., Any] | type) -> 'Self':
         self.add_named_ref(ref.__name__, ref)
 
         return self
 
-    def add_named_ref(self, name: str, ref: Any) -> Self:
+    def add_named_ref(self, name: str, ref: Any) -> 'Self':
         if self.name not in self._refs:
             self._refs[self.name] = {}
 
@@ -27,7 +27,7 @@ class _Builder:
 
         return self
 
-    def lazy_add_ref(self, ref_name: str) -> Self:
+    def lazy_add_ref(self, ref_name: str) -> 'Self':
         self.add_named_ref(ref_name, import_module(ref_name))
 
         return self
