@@ -16,12 +16,12 @@ class _Builder:
         self.name = name
         self._refs = _refs
 
-    def add_ref(self, ref: Callable[..., Any] | type) -> 'Self':
+    def add_ref(self, ref: Callable[..., Any] | type) -> '_Builder':
         self.add_named_ref(ref.__name__, ref)
 
         return self
 
-    def add_named_ref(self, name: str, ref: Any) -> 'Self':
+    def add_named_ref(self, name: str, ref: Any) -> '_Builder':
         if self.name not in self._refs:
             self._refs[self.name] = {}
 
@@ -29,7 +29,7 @@ class _Builder:
 
         return self
 
-    def lazy_add_ref(self, ref_name: str) -> 'Self':
+    def lazy_add_ref(self, ref_name: str) -> '_Builder':
         self.add_named_ref(ref_name, import_module(ref_name))
 
         return self
